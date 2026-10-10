@@ -1,0 +1,55 @@
+import os
+import sys
+import tkinter as tk
+
+
+if os.environ.get("DISPLAY") is None and sys.platform != "win32":
+    print("Tkinter GUI requires a display. This environment has no DISPLAY variable.")
+    print("Run this script on a machine with a desktop, or use X11 forwarding / xvfb.")
+    raise SystemExit(0)
+
+
+def click(event):
+    current = entry.get()
+    button_text = event.widget.cget("text")
+
+    if button_text == "=":
+        try:
+            result = eval(current, {"__builtins__": {}}, {})
+            entry.delete(0, tk.END)
+            entry.insert(tk.END, str(result))
+        except Exception:
+            entry.delete(0, tk.END)
+            entry.insert(tk.END, "Error")
+
+    elif button_text == "C":
+        entry.delete(0, tk.END)
+
+    else:
+        entry.insert(tk.END, button_text)
+
+
+root = tk.Tk()
+root.title("Python Calculator")
+root.geometry("320x400")
+
+entry = tk.Entry(root, font=("Arial", 20), justify="right")
+entry.pack(fill="x", padx=10, pady=10)
+
+buttons = [
+    ["7", "8", "9", "/"],
+    ["4", "5", "6", "*"],
+    ["1", "2", "3", "-"],
+    ["C", "0", "=", "+"],
+]
+
+for row in buttons:
+    frame = tk.Frame(root)
+    frame.pack(expand=True, fill="both")
+
+    for text in row:
+        button = tk.Button(frame, text=text, font=("Arial", 16))
+        button.pack(side="left", expand=True, fill="both")
+        button.bind("<Button-1>", click)
+
+root.mainloop()
